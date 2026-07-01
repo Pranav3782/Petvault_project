@@ -93,8 +93,8 @@ A fully functional, authenticated pet health management system with file uploads
 
 1. **Clone the repository**
 ```bash
-git clone <your-repo-url>
-cd pet-health-logbook-main
+git clone https://github.com/Pranav3782/Petvault_project.git
+cd Petvault_project
 ```
 
 2. **Install dependencies**
