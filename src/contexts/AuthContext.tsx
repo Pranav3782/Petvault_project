@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export interface Profile {
     id: string;
@@ -98,22 +98,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const signUp = async (email: string, password: string) => {
-        const { error } = await supabase.auth.signUp({
-            email,
-            password,
-        });
+        if (!isSupabaseConfigured) {
+            throw new Error('Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables in your Vercel project settings.');
+        }
+        const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
     };
 
     const signIn = async (email: string, password: string) => {
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-        if (error) throw error;
+        if (!isSupabaseConfigured) {
+            throw new Error('Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables in your Vercel project settings.');
+        }
+        try {
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+        } catch (err: any) {
+            // Convert cryptic network errors into actionable messages
+            if (err?.message?.includes('fetch') || err?.name === 'TypeError') {
+                throw new Error('Cannot connect to the database. Please check your Supabase environment variables are correctly set in Vercel.');
+            }
+            throw err;
+        }
     };
 
     const signOut = async () => {
+        if (!isSupabaseConfigured) return;
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
     };

@@ -3,18 +3,22 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    '[PetVault] Supabase environment variables are not set. ' +
-    'Please create a .env file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. ' +
-    'See .env.example for reference.'
+// Exported flag so other modules can check if Supabase is properly configured
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+if (!isSupabaseConfigured) {
+  console.error(
+    '[PetVault] ⚠️ Supabase environment variables are NOT set.\n' +
+    'VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be defined.\n' +
+    '• Local dev: Add them to your .env file\n' +
+    '• Vercel: Add them in Project Settings → Environment Variables'
   );
 }
 
-// Use placeholder values if env vars are missing so the app doesn't white-screen
+// Uses real URL if configured, otherwise a no-op placeholder (app won't crash, but auth will fail gracefully)
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key',
+  supabaseAnonKey || 'placeholder-anon-key',
   {
     auth: {
       persistSession: true,
