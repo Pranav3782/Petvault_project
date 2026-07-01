@@ -88,6 +88,7 @@ A fully functional, authenticated pet health management system with file uploads
 ### Prerequisites
 - Node.js 18+ and npm
 - Supabase account (free tier works)
+- Groq API key (free at [console.groq.com](https://console.groq.com))
 
 ### Installation
 
@@ -110,10 +111,15 @@ npm install
 
 4. **Configure environment variables**
 ```bash
-# Copy .env.example to .env
-# Add your Supabase credentials
-VITE_SUPABASE_URL=your_supabase_url
+# Copy .env.example to .env and fill in your credentials
+cp .env.example .env
+```
+
+Edit `.env` with your actual values:
+```env
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+GROQ_API_KEY=your_groq_api_key
 ```
 
 5. **Run the development server**
@@ -123,8 +129,38 @@ npm run dev
 
 6. **Open your browser**
 ```
-http://localhost:5173
+http://localhost:8080
 ```
+
+---
+
+## 🌐 Deploying to Vercel
+
+This project is pre-configured for Vercel with a `vercel.json` that handles:
+- React SPA routing (no 404 on page refresh)
+- `/api/chat` as a serverless function (no separate backend server needed)
+
+### Steps
+
+1. **Push your code to GitHub** (already done if you cloned this repo)
+
+2. **Connect to Vercel**
+   - Go to [vercel.com](https://vercel.com) → New Project
+   - Import your GitHub repository
+
+3. **Set Environment Variables** in Vercel Dashboard → Project Settings → Environment Variables:
+
+   | Variable | Value |
+   |---|---|
+   | `VITE_SUPABASE_URL` | Your Supabase project URL |
+   | `VITE_SUPABASE_ANON_KEY` | Your Supabase anon/public key |
+   | `GROQ_API_KEY` | Your Groq API key |
+
+   > ⚠️ **These MUST be set or login and the AI chat will not work.**
+
+4. **Deploy** — Vercel will auto-build and deploy. Every push to `main` auto-redeploys.
+
+
 
 ---
 
